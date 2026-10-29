@@ -1,0 +1,361 @@
+/* Layout-only rules. Design tokens live in variables.css,
+   reusable component classes live in components.css. */
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+  width: var(--sidebar-width);
+  min-height: 100vh;
+  background-color: var(--sidebar-bg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: left var(--transition-base);
+  z-index: 1030;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar .brand {
+  color: #fff;
+  font-weight: var(--fw-bold);
+  font-size: 1.2rem;
+  padding: 1.25rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: -0.01em;
+}
+
+.sidebar .nav-link {
+  color: var(--sidebar-text);
+  padding: 0.65rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: var(--fw-medium);
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: 0;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.sidebar .nav-link i {
+  font-size: 1.05rem;
+  width: 20px;
+  text-align: center;
+}
+
+.sidebar .nav-link:hover {
+  color: var(--sidebar-text-active);
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.sidebar .nav-link.active {
+  color: var(--sidebar-text-active);
+  background-color: var(--color-primary);
+}
+
+/* ---------- Main content area ---------- */
+.main-content {
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+}
+
+/* ---------- Top navbar ---------- */
+.topnavbar {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.85rem 1.5rem;
+}
+
+/* ---------- Mobile: sidebar collapses off-canvas ---------- */
+@media (max-width: 991.98px) {
+  .sidebar {
+    left: -280px;
+  }
+  .sidebar.show {
+    left: 0;
+  }
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* ---------- Chart canvas sizing fix ---------- */
+#salesChart,
+#leadStatusChart {
+  max-height: 260px;
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* ---------- Sidebar footer (avatar / role / settings / logout) ---------- */
+.sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--space-3);
+}
+
+.sidebar-user-link {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--sidebar-text);
+  transition: background-color var(--transition-fast);
+}
+
+.sidebar-user-link:hover,
+.sidebar-user-link.active {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--sidebar-text-active);
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.sidebar-user-name {
+  font-size: 0.85rem;
+  font-weight: var(--fw-medium);
+  color: var(--sidebar-text-active);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-user-role {
+  font-size: 0.72rem;
+  color: var(--sidebar-text);
+}
+
+.sidebar-logout {
+  font-size: 0.85rem;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* ---------- Notification bell ---------- */
+.notif-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-danger);
+  border: 2px solid var(--color-surface);
+}
+
+.notif-dropdown {
+  width: 320px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.notif-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--color-slate-900);
+  font-size: 0.85rem;
+  transition: background-color var(--transition-fast);
+}
+
+.notif-item:hover {
+  background-color: var(--color-slate-50);
+}
+
+.notif-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Toasts ---------- */
+.toast-success { background-color: var(--color-success); color: #fff; }
+.toast-danger  { background-color: var(--color-danger);  color: #fff; }
+.toast-info    { background-color: var(--color-info);    color: #fff; }
+.toast-warning { background-color: var(--color-warning); color: #fff; }
+
+/* ---------- KPI icons ---------- */
+.kpi-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.kpi-icon-primary { background-color: var(--color-primary-light); color: var(--color-primary); }
+.kpi-icon-info    { background-color: var(--color-info-light);    color: var(--color-info); }
+.kpi-icon-warning { background-color: var(--color-warning-light); color: var(--color-warning); }
+.kpi-icon-success { background-color: var(--color-success-light); color: var(--color-success); }
+.kpi-icon-danger  { background-color: var(--color-danger-light);  color: var(--color-danger); }
+
+/* 5-column KPI row on large screens, stacks on smaller ones */
+@media (min-width: 992px) {
+  .col-lg-2-4 {
+    flex: 0 0 auto;
+    width: 20%;
+  }
+}
+
+/* ---------- Activity timeline ---------- */
+.activity-timeline {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.activity-item {
+  position: relative;
+  display: flex;
+  gap: 0.75rem;
+  padding-bottom: 1.1rem;
+}
+
+.activity-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: -1.15rem;
+  top: 0.9rem;
+  bottom: -0.2rem;
+  width: 1px;
+  background-color: var(--color-border);
+}
+
+.activity-dot {
+  position: absolute;
+  left: -1.45rem;
+  top: 0.2rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-primary);
+}
+
+.activity-desc {
+  font-size: 0.875rem;
+  color: var(--color-slate-900);
+}
+
+.activity-meta {
+  font-size: 0.75rem;
+  color: var(--color-slate-500);
+}
+
+/* ---------- Follow-up widget rows ---------- */
+.followup-widget-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.followup-widget-item:last-child {
+  border-bottom: none;
+}
+
+/* ---------- Kanban board ---------- */
+.kanban-board {
+  display: flex;
+  gap: var(--space-3);
+  overflow-x: auto;
+  padding-bottom: var(--space-3);
+}
+
+.kanban-column {
+  flex: 0 0 260px;
+  background-color: var(--color-slate-50);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 220px);
+}
+
+.kanban-column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3);
+  font-weight: var(--fw-semibold);
+  font-size: 0.85rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.kanban-column-body {
+  padding: var(--space-2);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.kanban-card {
+  display: block;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.kanban-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+  color: inherit;
+}
+
+.kanban-empty {
+  text-align: center;
+  color: var(--color-slate-500);
+  font-size: 0.8rem;
+  padding: var(--space-4) 0;
+}
+
+/* ---------- Error pages ---------- */
+.error-page {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.error-code {
+  font-size: 5rem;
+  font-weight: var(--fw-bold);
+  color: var(--color-primary);
+  line-height: 1;
+  margin-bottom: var(--space-3);
+}
+
+/* ---------- AI assistant output ---------- */
+.ai-output {
+  background-color: var(--color-slate-50);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-4);
+  white-space: pre-wrap;
+  font-size: 0.9rem;
+}
+
+.ai-output-error {
+  background-color: var(--color-danger-light);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}

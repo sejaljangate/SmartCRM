@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block page_title %}Server Error{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="error-code text-danger">500</div>
+  <h5 class="mb-2">Something went wrong on our end.</h5>
+  <p class="page-subtitle mb-4">Please try again shortly.</p>
+  <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary">Back to Dashboard</a>
+</div>
+{% endblock %}
+{% block guest_content %}
+<div class="error-page">
+  <div class="auth-brand-logo text-center mb-4" style="color:var(--color-primary);">SmartCRM</div>
+  <div class="error-code text-danger">500</div>
+  <h5 class="mb-2">Something went wrong on our end.</h5>
+  <p class="page-subtitle mb-4">Please try again shortly.</p>
+  <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Back to Login</a>
+</div>
+{% endblock %}

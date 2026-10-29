@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block page_title %}Sales / Deals{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-start mb-4 fade-in-up">
+  <div>
+    <h4 class="fw-bold mb-1">Sales / Deals</h4>
+    <p class="page-subtitle mb-0">Track deals through your sales pipeline.</p>
+  </div>
+  <a href="{{ url_for('deals.add_deal') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Deal</a>
+</div>
+
+<!-- Summary cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="helper-text mb-1">Won Revenue</div>
+      <div class="fs-4 fw-bold">₹{{ "%.2f"|format(total_revenue) }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="helper-text mb-1">Won Deals</div>
+      <div class="fs-4 fw-bold text-success">{{ won_count }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="helper-text mb-1">Lost Deals</div>
+      <div class="fs-4 fw-bold text-danger">{{ lost_count }}</div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card p-3">
+      <div class="helper-text mb-1">Avg. Deal Value</div>
+      <div class="fs-4 fw-bold">₹{{ "%.2f"|format(avg_deal_value) }}</div>
+    </div>
+  </div>
+</div>
+
+<div class="card p-3 mb-3">
+  <form class="d-flex gap-2" method="GET">
+    <select name="status" class="form-select" style="max-width:220px">
+      <option value="">All Status</option>
+      <option value="Negotiation" {% if status_filter == "Negotiation" %}selected{% endif %}>Negotiation</option>
+      <option value="Won" {% if status_filter == "Won" %}selected{% endif %}>Won</option>
+      <option value="Lost" {% if status_filter == "Lost" %}selected{% endif %}>Lost</option>
+    </select>
+    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-funnel"></i></button>
+  </form>
+</div>
+
+<div class="card p-3">
+  {% if deals %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Deal</th>
+        <th>Customer</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>Assigned To</th>
+        <th>Status</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for d in deals %}
+      <tr>
+        <td class="fw-medium">{{ d.deal_name }}</td>
+        <td>{{ d.customer.full_name if d.customer else "—" }}</td>
+        <td class="fw-medium">₹{{ "%.2f"|format(d.deal_amount) }}</td>
+        <td class="helper-text">{{ d.deal_date }}</td>
+        <td>{{ d.assigned_employee.full_name if d.assigned_employee else "Unassigned" }}</td>
+        <td>
+          {% set badge_map = {"Negotiation": "warning", "Won": "success", "Lost": "danger"} %}
+          <span class="badge badge-{{ badge_map.get(d.status, 'neutral') }}">{{ d.status }}</span>
+        </td>
+        <td class="text-end">
+          <a href="{{ url_for('deals.edit_deal', deal_id=d.id) }}" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
+          <button type="button" class="btn btn-sm btn-light text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ d.id }}"><i class="bi bi-trash"></i></button>
+
+          <div class="modal fade" id="deleteModal{{ d.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Delete Deal?</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">Delete deal <strong>{{ d.deal_name }}</strong>?</div>
+                <div class="modal-footer border-0">
+                  <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <form method="POST" action="{{ url_for('deals.delete_deal', deal_id=d.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <nav>
+    <ul class="pagination mb-0 mt-2">
+      {% for p in range(1, pagination.pages + 1) %}
+        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('deals.list_deals', page=p, status=status_filter) }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-currency-rupee"></i>
+    <h6>No Deals Yet</h6>
+    <p class="mb-3">Add a deal once you're negotiating with a customer.</p>
+    <a href="{{ url_for('deals.add_deal') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Deal</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

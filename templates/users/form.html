@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block page_title %}{{ "Edit User" if user else "Add Employee" }}{% endblock %}
+{% block content %}
+
+{% set data = form_data or user %}
+
+<div class="card p-4" style="max-width: 600px;">
+  <h5 class="mb-3">{{ "Edit User" if user else "Add New Employee" }}</h5>
+  <form method="POST">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Full Name *</label>
+        <input type="text" name="full_name" class="form-control" value="{{ data.full_name if data else '' }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email *</label>
+        <input type="email" name="email" class="form-control" value="{{ data.email if data else '' }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control" value="{{ data.phone if data else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Role</label>
+        <select name="role" class="form-select">
+          <option value="employee" {% if data and data.role == "employee" %}selected{% endif %}>Employee</option>
+          <option value="admin" {% if data and data.role == "admin" %}selected{% endif %}>Admin</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">{{ "New Password (leave blank to keep current)" if user else "Password *" }}</label>
+        <input type="password" name="password" class="form-control" {% if not user %}required{% endif %}>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save User</button>
+      <a href="{{ url_for('users.list_users') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

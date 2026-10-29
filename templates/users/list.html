@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block page_title %}User Management{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">Users</h5>
+  <a href="{{ url_for('users.add_user') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg"></i> Add Employee
+  </a>
+</div>
+
+<div class="card p-3">
+  {% if users %}
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.full_name }}{% if u.id == current_user.id %} <span class="text-muted small">(you)</span>{% endif %}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.phone or "—" }}</td>
+        <td><span class="badge bg-{{ 'primary' if u.role == 'admin' else 'secondary' }}">{{ u.role|capitalize }}</span></td>
+        <td>
+          {% if u.is_active_user %}
+            <span class="badge bg-success">Active</span>
+          {% else %}
+            <span class="badge bg-secondary">Inactive</span>
+          {% endif %}
+        </td>
+        <td>{{ u.created_at.strftime('%d %b %Y') }}</td>
+        <td class="text-end">
+          <a href="{{ url_for('users.edit_user', user_id=u.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+
+          {% if u.id != current_user.id %}
+          <form method="POST" action="{{ url_for('users.toggle_status', user_id=u.id) }}" class="d-inline">
+            <button type="submit" class="btn btn-sm btn-outline-warning" title="{{ 'Deactivate' if u.is_active_user else 'Activate' }}">
+              <i class="bi bi-power"></i>
+            </button>
+          </form>
+
+          <button type="button" class="btn btn-sm btn-outline-danger"
+                  data-bs-toggle="modal" data-bs-target="#deleteModal{{ u.id }}">
+            <i class="bi bi-trash"></i>
+          </button>
+
+          <div class="modal fade" id="deleteModal{{ u.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-body">Delete user <strong>{{ u.full_name }}</strong>? This cannot be undone.</div>
+                <div class="modal-footer">
+                  <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <form method="POST" action="{{ url_for('users.delete_user', user_id=u.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-muted text-center py-4 mb-0">No users found.</p>
+  {% endif %}
+</div>
+
+{% endblock %}

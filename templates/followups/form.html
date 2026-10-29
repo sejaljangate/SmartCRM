@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block page_title %}{{ "Edit Follow-up" if followup else "Schedule Follow-up" }}{% endblock %}
+{% block content %}
+
+{% set data = form_data or followup %}
+
+<div class="card p-4" style="max-width: 700px;">
+  <h5 class="mb-3">{{ "Edit Follow-up" if followup else "Schedule New Follow-up" }}</h5>
+  <form method="POST">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Follow-up Date *</label>
+        <input type="date" name="followup_date" class="form-control" value="{{ data.followup_date if data else '' }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Follow-up Time</label>
+        <input type="time" name="followup_time" class="form-control" value="{{ data.followup_time if data else '' }}">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Customer</label>
+        <select name="customer_id" class="form-select">
+          <option value="">-- None --</option>
+          {% for c in customers %}
+            <option value="{{ c.id }}" {% if data and data.customer_id == c.id %}selected{% endif %}>{{ c.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Lead</label>
+        <select name="lead_id" class="form-select">
+          <option value="">-- None --</option>
+          {% for l in leads %}
+            <option value="{{ l.id }}" {% if data and data.lead_id == l.id %}selected{% endif %}>{{ l.lead_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Assign to Employee</label>
+        <select name="assigned_to" class="form-select">
+          <option value="">-- Unassigned --</option>
+          {% for e in employees %}
+            <option value="{{ e.id }}" {% if data and data.assigned_to == e.id %}selected{% endif %}>{{ e.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Purpose</label>
+        <input type="text" name="purpose" class="form-control" placeholder="e.g. Discuss proposal" value="{{ data.purpose if data else '' }}">
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Notes</label>
+        <textarea name="notes" class="form-control" rows="3">{{ data.notes if data else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save Follow-up</button>
+      <a href="{{ url_for('followups.list_followups') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

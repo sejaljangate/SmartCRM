@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block page_title %}{{ "Edit Deal" if deal else "Add Deal" }}{% endblock %}
+{% block content %}
+
+{% set data = form_data or deal %}
+
+<div class="card p-4" style="max-width: 700px;">
+  <h5 class="mb-3">{{ "Edit Deal" if deal else "Add New Deal" }}</h5>
+  <form method="POST">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Customer *</label>
+        <select name="customer_id" class="form-select" required>
+          <option value="">-- Select Customer --</option>
+          {% for c in customers %}
+            <option value="{{ c.id }}" {% if data and data.customer_id == c.id %}selected{% endif %}>{{ c.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Deal Name *</label>
+        <input type="text" name="deal_name" class="form-control" value="{{ data.deal_name if data else '' }}" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Deal Amount (₹) *</label>
+        <input type="number" step="0.01" min="0" name="deal_amount" class="form-control" value="{{ data.deal_amount if data else 0 }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Deal Date *</label>
+        <input type="date" name="deal_date" class="form-control" value="{{ data.deal_date if data else '' }}" required>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Assign to Employee</label>
+        <select name="assigned_to" class="form-select">
+          <option value="">-- Unassigned --</option>
+          {% for e in employees %}
+            <option value="{{ e.id }}" {% if data and data.assigned_to == e.id %}selected{% endif %}>{{ e.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          {% for s in statuses %}
+            <option value="{{ s }}" {% if (data and data.status == s) or (not data and s == "Negotiation") %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Notes</label>
+        <textarea name="notes" class="form-control" rows="3">{{ data.notes if data else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save Deal</button>
+      <a href="{{ url_for('deals.list_deals') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

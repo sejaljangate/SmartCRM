@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block page_title %}Leads{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-start mb-4 fade-in-up">
+  <div>
+    <h4 class="fw-bold mb-1">Leads</h4>
+    <p class="page-subtitle mb-0">Track and manage your sales pipeline.</p>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('leads.kanban_leads') }}" class="btn btn-outline-secondary"><i class="bi bi-kanban"></i> Pipeline View</a>
+    <a href="{{ url_for('leads.add_lead') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Lead</a>
+  </div>
+</div>
+
+<div class="card p-3 mb-3">
+  <form class="row g-2 align-items-center" method="GET">
+    <div class="col-md-6">
+      <div class="position-relative">
+        <i class="bi bi-search position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:var(--color-slate-500);"></i>
+        <input type="text" name="search" class="form-control ps-5" placeholder="Search name, company, email" value="{{ search }}">
+      </div>
+    </div>
+    <div class="col-md-4">
+      <select name="status" class="form-select">
+        <option value="">All Status</option>
+        {% for s in statuses %}
+          <option value="{{ s }}" {% if status_filter == s %}selected{% endif %}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-outline-secondary w-100" type="submit"><i class="bi bi-funnel"></i></button>
+    </div>
+  </form>
+</div>
+
+<div class="card p-3">
+  {% if leads %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Lead</th>
+        <th>Source</th>
+        <th>Expected Value</th>
+        <th>Assigned To</th>
+        <th>Status</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for l in leads %}
+      <tr>
+        <td>
+          <div class="fw-medium">{{ l.lead_name }}</div>
+          <div class="helper-text">{{ l.company or "—" }}</div>
+        </td>
+        <td>{{ l.lead_source or "—" }}</td>
+        <td class="fw-medium">₹{{ "%.2f"|format(l.expected_value) }}</td>
+        <td>
+          {% if l.assigned_employee %}
+            <div class="d-flex align-items-center gap-2">
+              <span class="avatar-circle avatar-sm">{{ l.assigned_employee.full_name[0]|upper }}</span>
+              <span class="small">{{ l.assigned_employee.full_name }}</span>
+            </div>
+          {% else %}
+            <span class="helper-text">Unassigned</span>
+          {% endif %}
+        </td>
+        <td>
+          {% set badge_map = {
+            "New": "neutral", "Contacted": "info", "Interested": "info",
+            "Negotiation": "warning", "Won": "success", "Lost": "danger"
+          } %}
+          <span class="badge badge-{{ badge_map.get(l.status, 'neutral') }}">{{ l.status }}</span>
+        </td>
+        <td class="text-end">
+          <a href="{{ url_for('leads.edit_lead', lead_id=l.id) }}" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
+          <button type="button" class="btn btn-sm btn-light text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ l.id }}"><i class="bi bi-trash"></i></button>
+
+          <div class="modal fade" id="deleteModal{{ l.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Delete Lead?</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">This action cannot be undone. Delete lead <strong>{{ l.lead_name }}</strong>?</div>
+                <div class="modal-footer border-0">
+                  <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <form method="POST" action="{{ url_for('leads.delete_lead', lead_id=l.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete Lead</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <nav>
+    <ul class="pagination mb-0 mt-2">
+      {% for p in range(1, pagination.pages + 1) %}
+        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('leads.list_leads', page=p, search=search, status=status_filter) }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-graph-up-arrow"></i>
+    <h6>No Leads Yet</h6>
+    <p class="mb-3">Create a lead to start tracking your sales pipeline.</p>
+    <a href="{{ url_for('leads.add_lead') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Lead</a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

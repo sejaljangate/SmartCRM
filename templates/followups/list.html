@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block page_title %}Follow-ups{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-start mb-4 fade-in-up">
+  <div>
+    <h4 class="fw-bold mb-1">Follow-ups</h4>
+    <p class="page-subtitle mb-0">Stay on top of your leads and customers.</p>
+  </div>
+  <a href="{{ url_for('followups.add_followup') }}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Schedule Follow-up</a>
+</div>
+
+<div class="card p-3 mb-4">
+  <form class="d-flex gap-2" method="GET">
+    <select name="status" class="form-select" style="max-width:220px">
+      <option value="">All Status</option>
+      <option value="Scheduled" {% if status_filter == "Scheduled" %}selected{% endif %}>Scheduled</option>
+      <option value="Overdue" {% if status_filter == "Overdue" %}selected{% endif %}>Overdue</option>
+      <option value="Completed" {% if status_filter == "Completed" %}selected{% endif %}>Completed</option>
+      <option value="Cancelled" {% if status_filter == "Cancelled" %}selected{% endif %}>Cancelled</option>
+    </select>
+    <button class="btn btn-outline-secondary" type="submit"><i class="bi bi-funnel"></i></button>
+  </form>
+</div>
+
+{% if followups %}
+<div class="card p-3">
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Date & Time</th>
+        <th>Customer</th>
+        <th>Lead</th>
+        <th>Purpose</th>
+        <th>Assigned To</th>
+        <th>Status</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in followups %}
+      {% set display_status = compute_display_status(f) %}
+      <tr>
+        <td>
+          <div class="fw-medium small">{{ f.followup_date }}</div>
+          <div class="helper-text">{{ f.followup_time or "" }}</div>
+        </td>
+        <td>{{ f.customer.full_name if f.customer else "—" }}</td>
+        <td>{{ f.lead.lead_name if f.lead else "—" }}</td>
+        <td>{{ f.purpose or "—" }}</td>
+        <td>{{ f.assigned_employee.full_name if f.assigned_employee else "Unassigned" }}</td>
+        <td>
+          {% set badge_map = {
+            "Scheduled": "info", "Overdue": "danger",
+            "Completed": "success", "Cancelled": "neutral"
+          } %}
+          <span class="badge badge-{{ badge_map.get(display_status, 'neutral') }}">{{ display_status }}</span>
+        </td>
+        <td class="text-end">
+          {% if f.status == "Scheduled" %}
+            <form method="POST" action="{{ url_for('followups.complete_followup', followup_id=f.id) }}" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-light text-success" title="Mark Completed"><i class="bi bi-check-lg"></i></button>
+            </form>
+            <form method="POST" action="{{ url_for('followups.cancel_followup', followup_id=f.id) }}" class="d-inline">
+              <button type="submit" class="btn btn-sm btn-light text-warning" title="Cancel"><i class="bi bi-x-lg"></i></button>
+            </form>
+          {% endif %}
+          <a href="{{ url_for('followups.edit_followup', followup_id=f.id) }}" class="btn btn-sm btn-light"><i class="bi bi-pencil"></i></a>
+          <button type="button" class="btn btn-sm btn-light text-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ f.id }}"><i class="bi bi-trash"></i></button>
+
+          <div class="modal fade" id="deleteModal{{ f.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Delete Follow-up?</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">Delete this follow-up scheduled for {{ f.followup_date }}?</div>
+                <div class="modal-footer border-0">
+                  <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <form method="POST" action="{{ url_for('followups.delete_followup', followup_id=f.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <nav>
+    <ul class="pagination mb-0 mt-2">
+      {% for p in range(1, pagination.pages + 1) %}
+        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('followups.list_followups', page=p, status=status_filter) }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+</div>
+{% else %}
+<div class="card p-3">
+  <div class="empty-state">
+    <i class="bi bi-calendar-check"></i>
+    <h6>No Follow-ups Yet</h6>
+    <p class="mb-3">Schedule a follow-up to stay on top of your leads and customers.</p>
+    <a href="{{ url_for('followups.add_followup') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Schedule Follow-up</a>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

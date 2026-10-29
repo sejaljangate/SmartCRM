@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+{% block title %}SmartCRM — Turn customer relationships into business growth{% endblock %}
+{% block guest_content %}
+
+<nav class="landing-nav">
+  <div class="brand">SmartCRM</div>
+  <div class="nav-actions">
+    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-secondary btn-sm">Login</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Get Started</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="landing-hero">
+  <div class="landing-hero-grid">
+    <div class="landing-hero-content text-start">
+      <h1>Turn customer relationships into business growth.</h1>
+      <p>SmartCRM helps small businesses manage customers, leads, follow-ups, and deals from one centralized, easy-to-use platform.</p>
+      <div class="d-flex gap-3 flex-wrap">
+        <a href="{{ url_for('auth.register') }}" class="btn btn-light">Get Started Free</a>
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light">Login</a>
+      </div>
+    </div>
+
+    <div class="landing-hero-illustration">
+      <svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg">
+        <!-- Browser window frame -->
+        <rect x="10" y="10" width="460" height="340" rx="14" fill="#ffffff" opacity="0.98"/>
+        <rect x="10" y="10" width="460" height="34" rx="14" fill="#f1f5f9"/>
+        <circle cx="30" cy="27" r="5" fill="#ef4444"/>
+        <circle cx="48" cy="27" r="5" fill="#f59e0b"/>
+        <circle cx="66" cy="27" r="5" fill="#22c55e"/>
+
+        <!-- Sidebar -->
+        <rect x="10" y="44" width="90" height="306" fill="#1e1533"/>
+        <rect x="24" y="64" width="60" height="10" rx="3" fill="#ffffff" opacity="0.85"/>
+        <rect x="24" y="96" width="62" height="8" rx="3" fill="#a78bfa"/>
+        <rect x="24" y="118" width="50" height="8" rx="3" fill="#ffffff" opacity="0.35"/>
+        <rect x="24" y="140" width="55" height="8" rx="3" fill="#ffffff" opacity="0.35"/>
+        <rect x="24" y="162" width="45" height="8" rx="3" fill="#ffffff" opacity="0.35"/>
+        <rect x="24" y="184" width="58" height="8" rx="3" fill="#ffffff" opacity="0.35"/>
+
+        <!-- KPI cards -->
+        <rect x="112" y="64" width="100" height="56" rx="8" fill="#f3e8ff"/>
+        <rect x="124" y="78" width="50" height="7" rx="3" fill="#7c3aed" opacity="0.5"/>
+        <rect x="124" y="93" width="34" height="12" rx="3" fill="#7c3aed"/>
+
+        <rect x="222" y="64" width="100" height="56" rx="8" fill="#dcfce7"/>
+        <rect x="234" y="78" width="50" height="7" rx="3" fill="#16a34a" opacity="0.5"/>
+        <rect x="234" y="93" width="34" height="12" rx="3" fill="#16a34a"/>
+
+        <rect x="332" y="64" width="118" height="56" rx="8" fill="#fef3c7"/>
+        <rect x="344" y="78" width="50" height="7" rx="3" fill="#d97706" opacity="0.5"/>
+        <rect x="344" y="93" width="44" height="12" rx="3" fill="#d97706"/>
+
+        <!-- Bar chart card -->
+        <rect x="112" y="134" width="180" height="110" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+        <rect x="128" y="150" width="70" height="7" rx="3" fill="#334155" opacity="0.5"/>
+        <rect x="140" y="185" width="14" height="45" rx="2" fill="#c4b5fd"/>
+        <rect x="162" y="200" width="14" height="30" rx="2" fill="#a78bfa"/>
+        <rect x="184" y="170" width="14" height="60" rx="2" fill="#7c3aed"/>
+        <rect x="206" y="195" width="14" height="35" rx="2" fill="#a78bfa"/>
+        <rect x="228" y="160" width="14" height="70" rx="2" fill="#7c3aed"/>
+        <rect x="250" y="205" width="14" height="25" rx="2" fill="#c4b5fd"/>
+
+        <!-- Donut chart card -->
+        <rect x="302" y="134" width="148" height="110" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+        <rect x="318" y="150" width="70" height="7" rx="3" fill="#334155" opacity="0.5"/>
+        <circle cx="376" cy="200" r="34" fill="none" stroke="#f1f5f9" stroke-width="14"/>
+        <circle cx="376" cy="200" r="34" fill="none" stroke="#7c3aed" stroke-width="14"
+                stroke-dasharray="90 130" stroke-dashoffset="0" transform="rotate(-90 376 200)"/>
+        <circle cx="376" cy="200" r="34" fill="none" stroke="#16a34a" stroke-width="14"
+                stroke-dasharray="60 160" stroke-dashoffset="-90" transform="rotate(-90 376 200)"/>
+
+        <!-- Table rows -->
+        <rect x="112" y="256" width="338" height="80" rx="8" fill="#ffffff" stroke="#e5e7eb"/>
+        <rect x="126" y="270" width="60" height="7" rx="3" fill="#334155" opacity="0.4"/>
+        <circle cx="132" cy="292" r="8" fill="#f3e8ff"/>
+        <rect x="148" y="288" width="90" height="7" rx="3" fill="#334155" opacity="0.5"/>
+        <rect x="380" y="288" width="50" height="14" rx="7" fill="#dcfce7"/>
+        <circle cx="132" cy="316" r="8" fill="#dcfce7"/>
+        <rect x="148" y="312" width="80" height="7" rx="3" fill="#334155" opacity="0.5"/>
+        <rect x="380" y="312" width="50" height="14" rx="7" fill="#fef3c7"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="landing-section">
+  <h2 class="landing-section-title">Everything you need to manage your sales</h2>
+  <p class="landing-section-subtitle">Built for small teams who want a clear, centralized view of every customer relationship.</p>
+
+  <div class="landing-feature-grid">
+    <div class="landing-feature-card">
+      <div class="landing-feature-icon"><i class="bi bi-people"></i></div>
+      <h6>Customer Management</h6>
+      <p>Keep every customer's details, history, and activity in one searchable, filterable place.</p>
+    </div>
+    <div class="landing-feature-card">
+      <div class="landing-feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+      <h6>Lead Pipeline</h6>
+      <p>Track leads from first contact to close, with a Kanban pipeline view and source analytics.</p>
+    </div>
+    <div class="landing-feature-card">
+      <div class="landing-feature-icon"><i class="bi bi-calendar-check"></i></div>
+      <h6>Follow-up Reminders</h6>
+      <p>Never miss a call again — automatic overdue detection and a real-time notification bell.</p>
+    </div>
+    <div class="landing-feature-card">
+      <div class="landing-feature-icon"><i class="bi bi-currency-rupee"></i></div>
+      <h6>Deal Tracking</h6>
+      <p>Move deals through Negotiation, Won, or Lost, with live revenue summaries.</p>
+    </div>
+    <div class="landing-feature-card">
+      <div class="landing-feature-icon"><i class="bi bi-bar-chart"></i></div>
+      <h6>Reports & Analytics</h6>
+      <p>Sales trends, conversion rates, and employee performance — with one-click CSV export.</p>
+    </div>
+    <div class="landing-feature-card">
+      <div class="landing-feature-icon"><i class="bi bi-shield-check"></i></div>
+      <h6>Role-Based Access</h6>
+      <p>Admins manage the whole system; employees only see what's relevant to their work.</p>
+    </div>
+  </div>
+</section>
+
+<!-- About -->
+<section class="landing-section landing-about">
+  <div class="landing-about-grid">
+    <div>
+      <h2 class="landing-section-title text-start">About SmartCRM</h2>
+      <p class="text-muted">
+        SmartCRM was built to solve a simple problem: small businesses tracking customers across
+        scattered spreadsheets and notebooks, leading to missed follow-ups and lost deals.
+        SmartCRM centralizes everything — customers, leads, follow-ups, and sales — into one
+        role-based platform, so nothing falls through the cracks.
+      </p>
+      <div class="landing-about-stats">
+        <div>
+          <div class="landing-stat-number">9</div>
+          <div class="landing-stat-label">Core Modules</div>
+        </div>
+        <div>
+          <div class="landing-stat-number">2</div>
+          <div class="landing-stat-label">Role-Based Access Levels</div>
+        </div>
+        <div>
+          <div class="landing-stat-number">100%</div>
+          <div class="landing-stat-label">Real-Time Data</div>
+        </div>
+        <div>
+          <div class="landing-stat-number">24/7</div>
+          <div class="landing-stat-label">Access Anywhere</div>
+        </div>
+      </div>
+    </div>
+    <div class="landing-about-visual">
+      <div class="mock-card">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="helper-text">Total Revenue</span>
+          <i class="bi bi-currency-rupee text-primary"></i>
+        </div>
+        <div class="fs-4 fw-bold">₹4,85,000</div>
+      </div>
+      <div class="mock-card">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="helper-text">Active Leads</span>
+          <i class="bi bi-graph-up-arrow text-primary"></i>
+        </div>
+        <div class="fs-4 fw-bold">18</div>
+      </div>
+      <div class="mock-card mb-0">
+        <div class="d-flex justify-content-between mb-2">
+          <span class="helper-text">Follow-ups Today</span>
+          <i class="bi bi-calendar-check text-primary"></i>
+        </div>
+        <div class="fs-4 fw-bold">5</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="landing-cta">
+  <h3>Ready to organize your sales pipeline?</h3>
+  <p class="mb-4" style="color: rgba(255,255,255,0.85);">Create your free account and start managing customers in minutes.</p>
+  <a href="{{ url_for('auth.register') }}" class="btn btn-light">Get Started Free</a>
+</section>
+
+<footer class="landing-footer">
+  © SmartCRM.  All rights reserved.
+</footer>
+
+{% endblock %}
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+{% endblock %}

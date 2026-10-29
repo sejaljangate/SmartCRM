@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block page_title %}Customers{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-start mb-4 fade-in-up">
+  <div>
+    <h4 class="fw-bold mb-1">Customers</h4>
+    <p class="page-subtitle mb-0">Manage and track all customer relationships.</p>
+  </div>
+  <a href="{{ url_for('customers.add_customer') }}" class="btn btn-primary">
+    <i class="bi bi-plus-lg"></i> Add Customer
+  </a>
+</div>
+
+<div class="card p-3 mb-3">
+  <form class="row g-2 align-items-center" method="GET">
+    <div class="col-md-5">
+      <div class="position-relative">
+        <i class="bi bi-search position-absolute" style="left:12px; top:50%; transform:translateY(-50%); color:var(--color-slate-500);"></i>
+        <input type="text" name="search" class="form-control ps-5" placeholder="Search name, company, email" value="{{ search }}">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select name="status" class="form-select">
+        <option value="">All Status</option>
+        <option value="Active" {% if status_filter == "Active" %}selected{% endif %}>Active</option>
+        <option value="Inactive" {% if status_filter == "Inactive" %}selected{% endif %}>Inactive</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select name="sort" class="form-select">
+        <option value="created_at_desc" {% if sort == "created_at_desc" %}selected{% endif %}>Newest first</option>
+        <option value="created_at_asc" {% if sort == "created_at_asc" %}selected{% endif %}>Oldest first</option>
+        <option value="name_asc" {% if sort == "name_asc" %}selected{% endif %}>Name A-Z</option>
+        <option value="name_desc" {% if sort == "name_desc" %}selected{% endif %}>Name Z-A</option>
+      </select>
+    </div>
+    <div class="col-md-1">
+      <button class="btn btn-outline-secondary w-100" type="submit"><i class="bi bi-funnel"></i></button>
+    </div>
+  </form>
+</div>
+
+<div class="card p-3">
+  {% if customers %}
+  <div class="table-responsive">
+  <table class="table table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Customer</th>
+        <th>Company</th>
+        <th>Contact</th>
+        <th>Status</th>
+        <th>Created</th>
+        <th class="text-end">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in customers %}
+      <tr>
+        <td>
+          <div class="d-flex align-items-center gap-2">
+            <span class="avatar-circle">{{ c.full_name[0]|upper }}</span>
+            <span class="fw-medium">{{ c.full_name }}</span>
+          </div>
+        </td>
+        <td>{{ c.company_name or "—" }}</td>
+        <td>
+          <div class="small">{{ c.email or "—" }}</div>
+          <div class="helper-text">{{ c.phone or "" }}</div>
+        </td>
+        <td>
+          {% if c.status == "Active" %}
+            <span class="badge badge-success">Active</span>
+          {% else %}
+            <span class="badge badge-neutral">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="helper-text">{{ c.created_at.strftime('%d %b %Y') }}</td>
+        <td class="text-end">
+          <div class="dropdown">
+            <button class="btn btn-sm btn-light" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{{ url_for('customers.view_customer', customer_id=c.id) }}"><i class="bi bi-eye me-2"></i>View Profile</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('customers.edit_customer', customer_id=c.id) }}"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item text-danger" href="#" data-bs-toggle="modal" data-bs-target="#deleteModal{{ c.id }}">
+                  <i class="bi bi-trash me-2"></i>Delete
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div class="modal fade" id="deleteModal{{ c.id }}" tabindex="-1">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header border-0">
+                  <h5 class="modal-title">Delete Customer?</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                  This action cannot be undone. Are you sure you want to delete <strong>{{ c.full_name }}</strong>?
+                </div>
+                <div class="modal-footer border-0">
+                  <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                  <form method="POST" action="{{ url_for('customers.delete_customer', customer_id=c.id) }}">
+                    <button type="submit" class="btn btn-danger">Delete Customer</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {% if pagination.pages > 1 %}
+  <nav>
+    <ul class="pagination mb-0 mt-2">
+      {% for p in range(1, pagination.pages + 1) %}
+        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('customers.list_customers', page=p, search=search, status=status_filter, sort=sort) }}">{{ p }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="empty-state">
+    <i class="bi bi-people"></i>
+    <h6>No Customers Yet</h6>
+    <p class="mb-3">Start building your customer database by adding your first customer.</p>
+    <a href="{{ url_for('customers.add_customer') }}" class="btn btn-primary btn-sm">
+      <i class="bi bi-plus-lg"></i> Add Customer
+    </a>
+  </div>
+  {% endif %}
+</div>
+
+{% endblock %}

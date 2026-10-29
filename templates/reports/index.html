@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block page_title %}Reports & Analytics{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-start mb-4 fade-in-up">
+  <div>
+    <h4 class="fw-bold mb-1">Reports & Analytics</h4>
+    <p class="page-subtitle mb-0">Business performance at a glance.</p>
+  </div>
+  <a href="{{ url_for('reports.export_deals_csv') }}" class="btn btn-outline-secondary">
+    <i class="bi bi-download"></i> Export Deals CSV
+  </a>
+</div>
+
+<!-- Sales Analytics -->
+<div class="card p-4 mb-4">
+  <h6 class="card-title-sm mb-3">Sales Performance</h6>
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="kpi-icon kpi-icon-primary"><i class="bi bi-briefcase"></i></span>
+        <div>
+          <div class="helper-text">Total Deals</div>
+          <div class="fs-5 fw-bold">{{ total_deal_count }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="kpi-icon kpi-icon-success"><i class="bi bi-check-circle"></i></span>
+        <div>
+          <div class="helper-text">Won</div>
+          <div class="fs-5 fw-bold">{{ won_deals }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="kpi-icon kpi-icon-danger"><i class="bi bi-x-circle"></i></span>
+        <div>
+          <div class="helper-text">Lost</div>
+          <div class="fs-5 fw-bold">{{ lost_deals }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="d-flex align-items-center gap-2">
+        <span class="kpi-icon kpi-icon-warning"><i class="bi bi-hourglass-split"></i></span>
+        <div>
+          <div class="helper-text">In Negotiation</div>
+          <div class="fs-5 fw-bold">{{ negotiation_deals }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if revenue_labels %}
+    <canvas id="revenueChart" height="90"></canvas>
+  {% else %}
+    <div class="empty-state">
+      <i class="bi bi-graph-up"></i>
+      <p class="mb-0">No revenue data available yet.</p>
+    </div>
+  {% endif %}
+</div>
+
+<div class="row g-3 mb-4">
+  <!-- Lead Analytics -->
+  <div class="col-md-6">
+    <div class="card p-4 h-100">
+      <h6 class="card-title-sm mb-3">Lead Conversion</h6>
+      {% if total_leads %}
+      <div class="row g-3">
+        <div class="col-6">
+          <div class="helper-text">Total Leads</div>
+          <div class="fs-4 fw-bold">{{ total_leads }}</div>
+        </div>
+        <div class="col-6">
+          <div class="helper-text">Conversion Rate</div>
+          <div class="fs-4 fw-bold">{{ "%.1f"|format(conversion_rate) }}%</div>
+        </div>
+        <div class="col-6">
+          <div class="helper-text">Converted (Won)</div>
+          <div class="fs-4 fw-bold text-success">{{ converted_leads }}</div>
+        </div>
+        <div class="col-6">
+          <div class="helper-text">Lost</div>
+          <div class="fs-4 fw-bold text-danger">{{ lost_leads }}</div>
+        </div>
+      </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-graph-up-arrow"></i>
+          <p class="mb-0">No lead data available yet.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Employee Performance -->
+  <div class="col-md-6">
+    <div class="card p-4 h-100">
+      <h6 class="card-title-sm mb-3">Employee Performance</h6>
+      {% if employee_rows %}
+      <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Employee</th><th>Deals Won</th><th>Revenue</th></tr></thead>
+        <tbody>
+          {% for row in employee_rows %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <span class="avatar-circle avatar-sm">{{ row.full_name[0]|upper }}</span>
+                {{ row.full_name }}
+              </div>
+            </td>
+            <td>{{ row.deals_won }}</td>
+            <td class="fw-medium">₹{{ "%.2f"|format(row.revenue) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-people"></i>
+          <p class="mb-0">No employee performance data yet.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+{% if revenue_labels %}
+new Chart(document.getElementById('revenueChart'), {
+  type: 'line',
+  data: {
+    labels: {{ revenue_labels|tojson }},
+    datasets: [{
+      label: 'Revenue (Won Deals)',
+      data: {{ revenue_totals|tojson }},
+      borderColor: '#7c3aed',
+      backgroundColor: 'rgba(124,58,237,0.1)',
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: { responsive: true, plugins: { legend: { display: false } } }
+});
+{% endif %}
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block guest_content %}
+
+<div class="auth-wrapper">
+  <div class="auth-brand-panel">
+    <div class="auth-brand-logo">SmartCRM</div>
+    <div class="auth-tagline">Turn customer relationships into business growth.</div>
+    <p class="auth-description">
+      One platform to manage your customers, leads, follow-ups, and deals — with real-time sales analytics built in.
+    </p>
+    <ul class="auth-feature-list">
+      <li><i class="bi bi-people"></i> Centralized customer records</li>
+      <li><i class="bi bi-graph-up-arrow"></i> Lead tracking & pipeline</li>
+      <li><i class="bi bi-calendar-check"></i> Automated follow-up reminders</li>
+      <li><i class="bi bi-bar-chart"></i> Live sales analytics & reports</li>
+    </ul>
+  </div>
+
+  <div class="auth-form-panel">
+    <div class="auth-card">
+      <h3>Create your account</h3>
+      <p class="helper-text">Get started with SmartCRM.</p>
+
+      <form method="POST" id="authForm">
+        <div class="auth-input-group">
+          <i class="bi bi-person auth-input-icon"></i>
+          <input type="text" name="full_name" class="form-control" placeholder="Full name" required>
+        </div>
+
+        <div class="auth-input-group">
+          <i class="bi bi-envelope auth-input-icon"></i>
+          <input type="email" name="email" class="form-control" placeholder="Email address" required>
+        </div>
+
+        <div class="auth-input-group">
+          <i class="bi bi-telephone auth-input-icon"></i>
+          <input type="text" name="phone" class="form-control" placeholder="Phone number">
+        </div>
+
+        <div class="auth-input-group mb-4">
+          <i class="bi bi-lock auth-input-icon"></i>
+          <input type="password" name="password" id="registerPassword" class="form-control" placeholder="Password" required>
+          <button type="button" class="auth-password-toggle" data-target="registerPassword">
+            <i class="bi bi-eye"></i>
+          </button>
+        </div>
+
+        <button type="submit" class="btn btn-primary w-100" data-loading-text="Creating account...">Create Account</button>
+      </form>
+
+      <p class="text-center helper-text mt-4 mb-0">
+        Already have an account? <a href="{{ url_for('auth.login') }}">Login</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

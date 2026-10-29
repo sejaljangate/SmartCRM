@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+
+<!-- Greeting header -->
+<div class="mb-4 fade-in-up">
+  <h4 class="fw-bold mb-1">{{ greeting }}, {{ current_user.full_name.split(' ')[0] }}</h4>
+  <p class="page-subtitle mb-0">Here's what's happening with your sales today.</p>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-lg-2-4">
+    <div class="card p-3 h-100 fade-in-up">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="helper-text mb-1">Total Customers</div>
+          <div class="fs-3 fw-bold">{{ total_customers }}</div>
+        </div>
+        <span class="kpi-icon kpi-icon-primary"><i class="bi bi-people"></i></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2-4">
+    <div class="card p-3 h-100 fade-in-up">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="helper-text mb-1">Active Leads</div>
+          <div class="fs-3 fw-bold">{{ total_leads }}</div>
+        </div>
+        <span class="kpi-icon kpi-icon-info"><i class="bi bi-graph-up-arrow"></i></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2-4">
+    <div class="card p-3 h-100 fade-in-up">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="helper-text mb-1">Open Deals</div>
+          <div class="fs-3 fw-bold">{{ open_deals }}</div>
+        </div>
+        <span class="kpi-icon kpi-icon-warning"><i class="bi bi-briefcase"></i></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-2-4">
+    <div class="card p-3 h-100 fade-in-up">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="helper-text mb-1">Total Revenue</div>
+          <div class="fs-3 fw-bold">₹{{ "%.2f"|format(total_revenue) }}</div>
+        </div>
+        <span class="kpi-icon kpi-icon-success"><i class="bi bi-currency-rupee"></i></span>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 col-lg-2-4">
+    <div class="card p-3 h-100 fade-in-up">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <div class="helper-text mb-1">Overdue Follow-ups</div>
+          <div class="fs-3 fw-bold {% if overdue_count > 0 %}text-danger{% endif %}">{{ overdue_count }}</div>
+        </div>
+        <span class="kpi-icon kpi-icon-danger"><i class="bi bi-exclamation-circle"></i></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="row g-3 mb-4">
+  <div class="col-md-7">
+    <div class="card p-3">
+      <h6 class="card-title-sm mb-3">Sales Overview</h6>
+      {% if sales_labels %}
+        <canvas id="salesChart" height="120"></canvas>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-bar-chart"></i>
+          <p class="mb-0">No sales data yet. Won deals will appear here.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-5">
+    <div class="card p-3">
+      <h6 class="card-title-sm mb-3">Lead Status</h6>
+      {% if lead_status_labels %}
+        <canvas id="leadStatusChart" height="120"></canvas>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-pie-chart"></i>
+          <p class="mb-0">No leads yet.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Activity + Follow-ups -->
+<div class="row g-3">
+  <div class="col-md-5">
+    <div class="card p-3">
+      <h6 class="card-title-sm mb-3">Recent Activity</h6>
+      {% if recent_activity %}
+        <div class="activity-timeline">
+          {% for a in recent_activity %}
+          <div class="activity-item">
+            <span class="activity-dot"></span>
+            <div>
+              <div class="activity-desc">{{ a.description }}</div>
+              <div class="activity-meta">{{ a.customer.full_name if a.customer else "" }} · {{ a.created_at.strftime('%d %b, %I:%M %p') }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-activity"></i>
+          <p class="mb-0">No activity yet. Actions across the CRM will show up here.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card p-3">
+      <h6 class="card-title-sm mb-3">Upcoming Follow-ups</h6>
+      {% if upcoming_followups %}
+        <div class="d-flex flex-column gap-2">
+          {% for f in upcoming_followups %}
+          {% set days_diff = (f.followup_date - today).days %}
+          <div class="followup-widget-item">
+            <div>
+              <div class="fw-medium small">{{ f.customer.full_name if f.customer else (f.purpose or "Follow-up") }}</div>
+              <div class="helper-text">{{ f.followup_date }}{% if f.followup_time %} · {{ f.followup_time }}{% endif %}</div>
+            </div>
+            {% if days_diff == 0 %}
+              <span class="badge badge-info">Today</span>
+            {% elif days_diff == 1 %}
+              <span class="badge badge-neutral">Tomorrow</span>
+            {% else %}
+              <span class="badge badge-neutral">{{ f.followup_date }}</span>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-calendar-check"></i>
+          <p class="mb-0">No upcoming follow-ups scheduled.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card p-3">
+      <h6 class="card-title-sm mb-3 text-danger">Overdue</h6>
+      {% if overdue_followups %}
+        <div class="d-flex flex-column gap-2">
+          {% for f in overdue_followups %}
+          <div class="followup-widget-item">
+            <div>
+              <div class="fw-medium small">{{ f.customer.full_name if f.customer else (f.purpose or "Follow-up") }}</div>
+              <div class="helper-text">{{ f.followup_date }}</div>
+            </div>
+            <span class="badge badge-danger">Overdue</span>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state py-3">
+          <i class="bi bi-check-circle"></i>
+          <p class="mb-0 small">All caught up!</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="col-md-12">
+    <div class="card p-3">
+      <h6 class="card-title-sm mb-3">Recent Customers</h6>
+      {% if recent_customers %}
+        <div class="row g-2">
+          {% for c in recent_customers %}
+          <div class="col-md-4 col-lg-2-4">
+            <div class="d-flex align-items-center gap-2 p-2">
+              <span class="avatar-circle avatar-sm">{{ c.full_name[0]|upper }}</span>
+              <div class="min-w-0">
+                <div class="fw-medium small text-truncate">{{ c.full_name }}</div>
+                <div class="helper-text text-truncate">{{ c.company_name or "—" }}</div>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-people"></i>
+          <h6>No Customers Yet</h6>
+          <p class="mb-3">Start building your customer database by adding your first customer.</p>
+          <a href="{{ url_for('customers.add_customer') }}" class="btn btn-primary btn-sm">
+            <i class="bi bi-plus-lg"></i> Add Customer
+          </a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+{% if sales_labels %}
+new Chart(document.getElementById('salesChart'), {
+  type: 'bar',
+  data: {
+    labels: {{ sales_labels|tojson }},
+    datasets: [{
+      label: 'Revenue (Won Deals)',
+      data: {{ sales_totals|tojson }},
+      backgroundColor: '#7c3aed',
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false }, tooltip: { padding: 10 } },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+{% endif %}
+
+{% if lead_status_labels %}
+new Chart(document.getElementById('leadStatusChart'), {
+  type: 'doughnut',
+  data: {
+    labels: {{ lead_status_labels|tojson }},
+    datasets: [{
+      data: {{ lead_status_counts|tojson }},
+      backgroundColor: ['#7c3aed', '#16a34a', '#d97706', '#dc2626', '#0891b2', '#a855f7']
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { tooltip: { padding: 10 } }
+  }
+});
+{% endif %}
+</script>
+{% endblock %}

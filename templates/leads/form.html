@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block page_title %}{{ "Edit Lead" if lead else "Add Lead" }}{% endblock %}
+{% block content %}
+
+{% set data = form_data or lead %}
+
+<div class="card p-4" style="max-width: 700px;">
+  <h5 class="mb-3">{{ "Edit Lead" if lead else "Add New Lead" }}</h5>
+  <form method="POST">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Lead Name *</label>
+        <input type="text" name="lead_name" class="form-control" value="{{ data.lead_name if data else '' }}" required>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Company</label>
+        <input type="text" name="company" class="form-control" value="{{ data.company if data else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" value="{{ data.email if data else '' }}">
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Phone</label>
+        <input type="text" name="phone" class="form-control" value="{{ data.phone if data else '' }}">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Lead Source</label>
+        <select name="lead_source" class="form-select">
+          <option value="">-- Select --</option>
+          {% for s in sources %}
+            <option value="{{ s }}" {% if data and data.lead_source == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Expected Value (₹)</label>
+        <input type="number" step="0.01" min="0" name="expected_value" class="form-control" value="{{ data.expected_value if data else 0 }}">
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Link to Existing Customer</label>
+        <select name="customer_id" class="form-select">
+          <option value="">-- None --</option>
+          {% for c in customers %}
+            <option value="{{ c.id }}" {% if data and data.customer_id == c.id %}selected{% endif %}>{{ c.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label">Assign to Employee</label>
+        <select name="assigned_to" class="form-select">
+          <option value="">-- Unassigned --</option>
+          {% for e in employees %}
+            <option value="{{ e.id }}" {% if data and data.assigned_to == e.id %}selected{% endif %}>{{ e.full_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Status</label>
+        <select name="status" class="form-select">
+          {% for s in statuses %}
+            <option value="{{ s }}" {% if (data and data.status == s) or (not data and s == "New") %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Notes</label>
+        <textarea name="notes" class="form-control" rows="3">{{ data.notes if data else '' }}</textarea>
+      </div>
+    </div>
+
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save Lead</button>
+      <a href="{{ url_for('leads.list_leads') }}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
